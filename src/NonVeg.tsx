@@ -20,7 +20,7 @@ function NonVeg() {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <h1 className="page-title">🍗 Fresh NonVeg Store</h1>
+      <h1 className="page-title"> Fresh NonVeg items </h1>
 
       <ol className="product-container">
         {nonVegItems.map((item) => (

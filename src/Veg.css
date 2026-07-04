@@ -81,3 +81,48 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+/* ===========================
+   Employee API Card
+=========================== */
+
+.employee-container {
+  display: flex;
+  justify-content: center;
+  margin: 50px 0;
+}
+
+.employee-card {
+  width: 450px;
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  transition: 0.3s;
+}
+
+.employee-card:hover {
+  transform: translateY(-5px);
+}
+
+.employee-card h2 {
+  color: #6a0dad;
+  margin-bottom: 25px;
+}
+
+.employee-card p {
+  font-size: 20px;
+  margin: 15px 0;
+  color: #333;
+}
+
+.employee-card strong {
+  color: #6a0dad;
+}
+
+.loading {
+  text-align: center;
+  font-size: 22px;
+  color: #6a0dad;
+  margin: 40px;
+}
