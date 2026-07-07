@@ -1,24 +1,38 @@
+import { useContext } from "react";
 import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaShoppingCart } from "react-icons/fa";
 import { GiCarrot, GiChickenOven } from "react-icons/gi";
+
 import Home from "./Home";
 import Veg from "./Veg";
 import NonVeg from "./NonVeg";
+// import Cart from "./Cart";
+import Cart from "./Cart";
+// import { CartContext } from "./contextApi/CartContext";
+import { CartContext } from "./contexApi/CartContext";
+
 import "./App.css";
 
-
 function App() {
+  const { cart } = useContext(CartContext);
+
   return (
     <BrowserRouter>
       <div className="navbar">
-        <NavLink to="/" end className={({isActive}) => isActive ? "active-link" : ""}>
+        <NavLink to="/" end>
           <FaHome /> Home
         </NavLink>
-        <NavLink to="/veg" className={({isActive}) => isActive ? "active-link" : ""}>
+
+        <NavLink to="/veg">
           <GiCarrot /> Veg Items
         </NavLink>
-        <NavLink to="/nonveg" className={({isActive}) => isActive ? "active-link" : ""}>
+
+        <NavLink to="/nonveg">
           <GiChickenOven /> NonVeg Items
+        </NavLink>
+
+        <NavLink to="/cart">
+          <FaShoppingCart /> Cart ({cart.length})
         </NavLink>
       </div>
 
@@ -26,6 +40,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/veg" element={<Veg />} />
         <Route path="/nonveg" element={<NonVeg />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </BrowserRouter>
   );
