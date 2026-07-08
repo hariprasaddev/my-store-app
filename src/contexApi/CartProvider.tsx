@@ -60,6 +60,7 @@ function CartProvider({ children }: Props) {
       return draft;
     });
   };
+  
 
   return (
     <CartContext.Provider
