@@ -2,9 +2,16 @@ import { useContext, useRef, useState } from "react";
 import { CartContext } from "./contexApi/CartContext";
 import { coupons } from "./data/Coupon";
 import { useNavigate } from "react-router-dom";
-import { FaCheckCircle, FaMinus, FaMoneyBillWave, FaPlug, FaShoppingCart, FaTicketAlt, FaTrash } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa6";
 
+import {
+  FaTrash,
+  FaShoppingCart,
+  FaMoneyBillWave,
+  FaTicketAlt,
+  FaCheckCircle,
+} from "react-icons/fa";
+
+import { FaPlus, FaMinus } from "react-icons/fa6";
 
 function Cart() {
   const {
@@ -14,19 +21,17 @@ function Cart() {
     decreaseQuantity,
   } = useContext(CartContext);
 
+  const navigate = useNavigate();
 
   const couponRef = useRef<HTMLInputElement>(null);
 
-  
+  const [couponPercent, setCouponPercent] = useState(0);
+  const [message, setMessage] = useState("");
+
   const grandTotal = cart.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
-
-
-  
-  const [couponPercent, setCouponPercent] = useState(0);
-  const [message, setMessage] = useState("");
 
   const applyCoupon = () => {
     const couponCode = couponRef.current?.value.trim() || "";
@@ -37,213 +42,276 @@ function Cart() {
 
     if (coupon) {
       setCouponPercent(coupon.discount);
-      setMessage(`🎉 Coupon Applied (${coupon.discount}% OFF)`);
+      setMessage(`🎉 ${coupon.discount}% Discount Applied`);
     } else {
       setCouponPercent(0);
-      setMessage("❌ Invalid Coupon Code by Ujwala");
+      setMessage("❌ Invalid Coupon");
     }
   };
-  
+
   const discount = (grandTotal * couponPercent) / 100;
+
   const finalAmount = grandTotal - discount;
 
-  let navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-100 py-10 px-5">
 
-      <h1 className="text-4xl font-bold text-center text-green-700 mb-10">
-        🛒 My Shopping Cart
-      </h1>
+      <div className="max-w-7xl mx-auto">
 
-      {cart.length === 0 ? (
-        <div className="bg-white p-10 rounded-xl shadow text-center">
-          <h2 className="text-3xl text-red-500 font-bold">
-            Your Cart is Empty 😔
-          </h2>
-        </div>
-      ) : (
+        <h1 className="text-5xl font-bold text-center mb-10 flex justify-center items-center gap-3">
+          <FaShoppingCart className="text-green-600" />
+          My Shopping Cart
+        </h1>
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {cart.length === 0 ? (
+          <div className="bg-white rounded-2xl shadow-lg p-16 text-center">
 
-          {/* LEFT SIDE */}
+            <h2 className="text-4xl font-bold text-red-500">
+              Your Cart is Empty
+            </h2>
 
-          <div className="lg:col-span-2 space-y-6">
+            <p className="text-gray-500 mt-3">
+              Add some fresh products to continue shopping.
+            </p>
 
-            {cart.map((item) => (
+          </div>
+        ) : (
 
-              <div
-                key={item.id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-5 flex flex-col md:flex-row items-center gap-6"
-              >
+          <div className="grid lg:grid-cols-3 gap-8">
 
-                <img
-                  src={item.imageurl}
-                  alt={item.description}
-                  className="w-36 h-36 object-contain"
-                />
+            {/* LEFT SIDE */}
 
-                <div className="flex-1">
+            <div className="lg:col-span-2 space-y-6">
 
-                  <h2 className="text-2xl font-bold text-gray-800">
-                    {item.description}
-                  </h2>
+              {cart.map((item) => (
 
-                  <p className="text-green-600 text-xl font-bold mt-2">
-                    ₹{item.price}
-                  </p>
+                <div
+                  key={item.id}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition duration-300 overflow-hidden"
+                >
 
-                  <p className="text-gray-500 mt-2">
-                    Quantity : {item.quantity}
-                  </p>
+                  <div className="flex flex-col md:flex-row gap-6 p-6">
 
-                  <p className="text-blue-600 font-bold text-lg mt-2">
-                    Total : ₹{item.price * item.quantity}
-                  </p>
+                    <img
+                      src={item.imageurl}
+                      alt={item.name}
+                      className="w-40 h-40 rounded-xl object-cover"
+                    />
 
-                </div>
+                    <div className="flex-1">
 
-                <div className="flex flex-col items-center gap-4">
+                      <h2 className="text-3xl font-bold text-gray-800">
+                        {item.name}
+                      </h2>
 
-                  <div className="flex items-center gap-3">
+                      <p className="text-gray-500 mt-2">
+                        {item.description}
+                      </p>
 
-                    <button
-                      onClick={() => decreaseQuantity(item.id)}
-                      className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full"
-                    >
-                      <FaMinus />
-                    </button>
+                      <p className="text-2xl font-bold text-green-600 mt-4">
+                        ₹ {item.price}
+                      </p>
 
-                    <span className="text-2xl font-bold">
-                      {item.quantity}
-                    </span>
+                      <p className="text-lg mt-2">
+                        Quantity :
+                        <span className="font-bold ml-2">
+                          {item.quantity}
+                        </span>
+                      </p>
 
-                    <button
-                      onClick={() => increaseQuantity(item.id)}
-                      className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full"
-                    >
-                      <FaPlus />
-                    </button>
+                      <p className="text-xl font-bold text-blue-600 mt-3">
+                        Item Total : ₹ {item.price * item.quantity}
+                      </p>
+
+                    </div>
+
+                    <div className="flex flex-col justify-center items-center gap-5">
+
+                      <div className="flex items-center gap-4">
+
+                        <button
+                          onClick={() => decreaseQuantity(item.id)}
+                          className="bg-red-500 hover:bg-red-600 text-white w-11 h-11 rounded-full"
+                        >
+                          <FaMinus />
+                        </button>
+
+                        <span className="text-2xl font-bold">
+                          {item.quantity}
+                        </span>
+
+                        <button
+                          onClick={() => increaseQuantity(item.id)}
+                          className="bg-green-500 hover:bg-green-600 text-white w-11 h-11 rounded-full"
+                        >
+                          <FaPlus />
+                        </button>
+
+                      </div>
+
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="bg-red-600 hover:bg-red-700 text-white px-5 py-3 rounded-xl flex items-center gap-2"
+                      >
+                        <FaTrash />
+                        Remove
+                      </button>
+
+                    </div>
 
                   </div>
 
-                  <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg flex items-center gap-2"
-                  >
-                    <FaTrash />
-                    Remove
-                  </button>
                 </div>
-              </div>
-            ))}
-          </div>
 
-          {/* RIGHT SIDE */}
-
-          <div className="bg-white rounded-2xl shadow-xl p-6 h-fit sticky top-5">
-
-            <div className="flex items-center gap-3 mb-6">
-
-              <FaShoppingCart className="text-3xl text-green-600" />
-
-              <h2 className="text-3xl font-bold">
-                Order Summary
-              </h2>
+              ))}
 
             </div>
 
-            <div className="flex gap-3 mb-5">
+            {/* RIGHT SIDE ORDER SUMMARY STARTS HERE */}
+                        <div className="bg-white rounded-2xl shadow-lg p-6 h-fit sticky top-5">
 
-              <input
-                ref={couponRef}
-                type="text"
-                placeholder="Enter Coupon"
-                className="border p-3 rounded-lg flex-1"
-              />
+              <div className="flex items-center gap-3 mb-6">
+                <FaShoppingCart className="text-3xl text-green-600" />
+                <h2 className="text-3xl font-bold">
+                  Order Summary
+                </h2>
+              </div>
+
+              {/* Coupon */}
+
+              <div className="mb-6">
+
+                <label className="block font-semibold mb-2">
+                  Apply Coupon
+                </label>
+
+                <div className="flex gap-3">
+
+                  <input
+                    ref={couponRef}
+                    type="text"
+                    placeholder="Enter Coupon Code"
+                    className="flex-1 border rounded-lg px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+
+                  <button
+                    onClick={applyCoupon}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg"
+                  >
+                    Apply
+                  </button>
+
+                </div>
+
+                {message && (
+                  <p
+                    className={`mt-3 font-semibold ${
+                      couponPercent > 0
+                        ? "text-green-600"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {message}
+                  </p>
+                )}
+
+              </div>
+
+              <hr className="mb-6" />
+
+              {/* Price Details */}
+
+              <div className="space-y-5">
+
+                <div className="flex justify-between">
+
+                  <div className="flex items-center gap-2">
+                    <FaMoneyBillWave className="text-green-600" />
+                    <span>Subtotal</span>
+                  </div>
+
+                  <span className="font-bold">
+                    ₹ {grandTotal.toFixed(2)}
+                  </span>
+
+                </div>
+
+                <div className="flex justify-between">
+
+                  <div className="flex items-center gap-2">
+                    <FaTicketAlt className="text-orange-500" />
+                    <span>Coupon Discount</span>
+                  </div>
+
+                  <span className="text-red-500 font-bold">
+                    - ₹ {discount.toFixed(2)}
+                  </span>
+
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Delivery Charge</span>
+
+                  <span className="text-green-600 font-bold">
+                    FREE
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>GST</span>
+
+                  <span>Included</span>
+                </div>
+
+                <hr />
+
+                <div className="flex justify-between items-center">
+
+                  <div className="flex items-center gap-2">
+
+                    <FaCheckCircle className="text-blue-600" />
+
+                    <span className="text-xl font-bold">
+                      Payable Amount
+                    </span>
+
+                  </div>
+
+                  <span className="text-3xl font-bold text-green-700">
+                    ₹ {finalAmount.toFixed(2)}
+                  </span>
+
+                </div>
+
+              </div>
 
               <button
-                onClick={applyCoupon}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-lg"
+                onClick={() =>
+                  navigate("/checkout", {
+                    state: {
+                      grandTotal,
+                      discount,
+                      finalAmount,
+                      couponPercent,
+                    },
+                  })
+                }
+                className="w-full mt-8 bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl text-xl font-bold shadow-lg transition duration-300 hover:scale-105"
               >
-                Apply
+                Proceed to Checkout
               </button>
 
             </div>
 
-            <p
-              className={`font-semibold mb-6 ${
-                discount > 0
-                  ? "text-green-600"
-                  : "text-red-500"
-              }`}
-            >
-              {message}
-            </p>
-                        <div className="space-y-5">
-
-              <div className="flex justify-between items-center">
-
-                <div className="flex items-center gap-2">
-                  <FaMoneyBillWave className="text-green-600" />
-                  <span>Grand Total</span>
-                </div>
-
-                <span className="font-bold text-lg">
-                  ₹{grandTotal.toFixed(2)}
-                </span>
-
-              </div>
-
-              <div className="flex justify-between items-center">
-
-                <div className="flex items-center gap-2">
-                  <FaTicketAlt className="text-orange-500" />
-                  <span>Coupon Discount</span>
-                </div>
-
-                <span className="font-bold text-red-600">
-                  - ₹{discount.toFixed(2)}
-                </span>
-
-              </div>
-
-              <hr />
-
-              <div className="flex justify-between items-center">
-
-                <div className="flex items-center gap-2">
-                  <FaCheckCircle className="text-blue-600" />
-                  <span className="font-bold">
-                    Payable Amount
-                  </span>
-                </div>
-
-                <span className="text-3xl font-bold text-green-700">
-                  ₹{finalAmount.toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-    <button
-  onClick={() =>
-    navigate("/checkout", {
-      state: {
-        grandTotal,
-        discount,
-        finalAmount,
-        couponPercent,
-      },
-    })
-  }
-  className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl"
->
-  Proceed to Checkout
-</button>
           </div>
-        </div>
-      )}
+
+        )}
+
+      </div>
+
     </div>
+
   );
 }
+
 export default Cart;

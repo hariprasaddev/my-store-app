@@ -3,6 +3,7 @@ import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
 import { FaHome, FaShoppingCart } from "react-icons/fa";
 import { GiCarrot, GiChickenOven } from "react-icons/gi";
 import Register from "./components/Register";
+import  Checkout from "./Checkout";
 
 
 import Home from "./Home";
@@ -47,6 +48,7 @@ function App() {
         <Route path="/veg" element={<Veg />} />
         <Route path="/nonveg" element={<NonVeg />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </BrowserRouter>
   );
