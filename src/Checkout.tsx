@@ -1,5 +1,5 @@
 
-import { useContext, useState } from "react";
+/*import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 // import { CartContext } from "../contextapi/CartContext";
 import { CartContext } from "./contexApi/CartContext";
@@ -184,5 +184,5 @@ function Checkout() {
   );
 }
 
-export default Checkout;
+export default Checkout;*/
   
