@@ -12,7 +12,11 @@ import {
   FaCheckCircle,
   FaShoppingBag,
   FaArrowLeft,
+  FaEnvelope,
 } from "react-icons/fa";
+import QRCode from "react-qr-code";
+import { sendOrderEmail } from "./services/emailservice";
+import { getAddressFromLocation } from "./apis/location";
 
 function Checkout() {
   const { cart, clearCart } = useContext(CartContext);
@@ -30,26 +34,91 @@ function Checkout() {
   const [name, setName] = useState("");
   const [mobile, setMobile] = useState("");
   const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
+  const getCurrentLocation= () => {
+  if (!navigator.geolocation) {
+    alert("Geolocation is not supported.");
+    return;
+  }
 
-  const placeOrder = () => {
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+
+      try {
+        const data = await getAddressFromLocation(lat, lng);
+        setAddress(data.display_name);
+      } catch (error) {
+        alert("Unable to fetch address.");
+      }
+    },
+    (error) => {
+      alert(error.message);
+    }
+  );
+};
+
+  // const placeOrder = () => {
+  //   if (!name || !mobile || !address) {
+  //     alert("Please fill all delivery details.");
+  //     return;
+  //   }
+
+  //   if (!paymentMode) {
+  //     alert("Please select payment method.");
+  //     return;
+  //   }
+
+  //   alert("🎉 Order Placed Successfully!\n\nThank you for shopping with Fresh Store.");
+
+  //   clearCart();
+
+  //   navigate("/");
+  // };
+ const placeOrder = async () => {
     if (!name || !mobile || !address) {
-      alert("Please fill all delivery details.");
+      alert("Please fill all address details.");
       return;
     }
-
     if (!paymentMode) {
-      alert("Please select payment method.");
+      alert("Please select a payment method.");
       return;
     }
+    alert("Order Placed Successfully!");
 
-    alert("🎉 Order Placed Successfully!\n\nThank you for shopping with Fresh Store.");
+    //prepare the email information 
+    // Map the template params & our Data.
+   
+  const order = {
+      order_id: Math.floor(Math.random() * 100000),
+      name: name,
+      email: email, // Recipient email
+	  
+      orders: cart.map((item) => ({
+        name: item.name,
+        units: item.quantity,
+        price: item.price,
+        image_url: item.imageurl,
+      })),
+
+      cost: {
+        shipping: 100,
+        tax: 100,
+        coupon: discount,
+        total: finalAmount,
+      },
+    };
+    
+    await sendOrderEmail(order);
 
     clearCart();
-
-    navigate("/");
+    navigate("/cart");
   };
 
+
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 py-10 px-5">
 
@@ -132,13 +201,35 @@ function Checkout() {
                   </div>
 
                 </div>
+                
 
+                 <div>
+
+                  <label className="font-semibold">
+                    Email Address
+                  </label>
+                  
+
+                  <div className="flex items-center border rounded-xl mt-2">
+
+                    <FaEnvelope className="mx-4 text-gray-400" />
+
+                    <input
+                      className="w-full p-4 outline-none rounded-xl"
+                      placeholder="Enter Email Address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+
+                  </div>
+
+                </div>
                 <div>
 
                   <label className="font-semibold">
                     Delivery Address
                   </label>
-
+                  
                   <textarea
                     rows={4}
                     className="border rounded-xl w-full mt-2 p-4 outline-none"
@@ -152,6 +243,14 @@ function Checkout() {
               </div>
 
             </div>
+            <button
+    type="button"
+    onClick={getCurrentLocation}
+    className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg flex items-center gap-2"
+  >
+    <FaMapMarkerAlt />
+    Use Current Location
+  </button>
 
             {/* PAYMENT */}
 
@@ -195,21 +294,16 @@ function Checkout() {
 
               </label>
 
-              {paymentMode === "UPI" && (
-                <div className="mt-6 bg-blue-50 rounded-2xl p-6 text-center">
+             {paymentMode === "UPI" && (
+              <div className="qr-section">
+                <h4>Scan UPI QR to Pay ₹{finalAmount.toFixed(2)}</h4>
+                <QRCode
+                  value={`upi://pay?pa=8688671631@ybl&pn=Kiranstore&am=${finalAmount.toFixed(2)}&cu=INR`}
+                />
+                <p>UPI ID: 8688671631@ybl</p>
+              </div>
+            )}
 
-                  <img
-                    src="/images/qr.png"
-                    className="w-56 mx-auto"
-                    alt="QR"
-                  />
-
-                  <p className="mt-4 font-semibold">
-                    Scan with PhonePe / GPay / Paytm
-                  </p>
-
-                </div>
-              )}
 
               {paymentMode === "COD" && (
                 <div className="mt-6 bg-green-100 rounded-xl p-5 font-semibold">
