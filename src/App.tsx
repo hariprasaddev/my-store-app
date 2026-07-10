@@ -16,6 +16,7 @@ import { CartContext } from "./contexApi/CartContext";
 
 
 import "./App.css";
+import Orders from "./order";
 
 function App() {
   const { cart } = useContext(CartContext);
@@ -34,6 +35,9 @@ function App() {
         <NavLink to="/nonveg">
           <GiChickenOven /> NonVeg Items
         </NavLink>
+           <NavLink to="/orders">
+          <GiChickenOven /> Orders
+        </NavLink>
 
         <NavLink to="/cart">
           <FaShoppingCart /> Cart ({cart.length})
@@ -49,6 +53,7 @@ function App() {
         <Route path="/nonveg" element={<NonVeg />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<Orders />} />
       </Routes>
     </BrowserRouter>
   );

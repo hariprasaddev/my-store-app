@@ -17,9 +17,12 @@ import {
 import QRCode from "react-qr-code";
 import { sendOrderEmail } from "./services/emailservice";
 import { getAddressFromLocation } from "./apis/location";
+import { OrderContext } from "./contexApi/OrderContext";
+import Swal from "sweetalert2";
 
 function Checkout() {
   const { cart, clearCart } = useContext(CartContext);
+  const { addOrder } = useContext(OrderContext);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -36,6 +39,9 @@ function Checkout() {
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [paymentMode, setPaymentMode] = useState("");
+
+
+
   const getCurrentLocation= () => {
   if (!navigator.geolocation) {
     alert("Geolocation is not supported.");
@@ -60,33 +66,111 @@ function Checkout() {
   );
 };
 
-  // const placeOrder = () => {
-  //   if (!name || !mobile || !address) {
-  //     alert("Please fill all delivery details.");
-  //     return;
-  //   }
 
-  //   if (!paymentMode) {
-  //     alert("Please select payment method.");
-  //     return;
-  //   }
-
-  //   alert("🎉 Order Placed Successfully!\n\nThank you for shopping with Fresh Store.");
-
-  //   clearCart();
-
-  //   navigate("/");
-  // };
  const placeOrder = async () => {
     if (!name || !mobile || !address) {
       alert("Please fill all address details.");
       return;
     }
     if (!paymentMode) {
-      alert("Please select a payment method.");
+      // alert("Please select a payment method.");
+      Swal.fire({
+  icon: "warning",
+  title: "Payment Required",
+  text: "Please select a payment method.",
+});
       return;
     }
-    alert("Order Placed Successfully!");
+    
+    // alert("Order Placed Successfully!");
+    Swal.fire({
+  icon: "success",
+  title: "Order Placed Successfully!",
+  html: `
+      <h3 style="color:green">
+          Thank you for shopping at Hari Store
+      </h3>
+
+      <p>Your order has been placed successfully.</p>
+
+      <p><b>Order ID :</b> #${Math.floor(Math.random() * 100000)}</p>
+
+      <p style="color:#2563eb">
+          Your order will be delivered within 30 minutes.
+      </p>
+  `,
+  confirmButtonText: "Continue Shopping",
+  confirmButtonColor: "#16a34a",
+}).then(() => {
+  clearCart();
+  navigate("/");
+});
+
+  // const placeOrder = async () => {
+  //   if (!name || !mobile || !address) {
+  //     alert("Please fill all address details.");
+  //     return;
+  //   }
+  //   if (!paymentMode) {
+  //     alert("Please select a payment method.");
+  //     return;
+  //   }
+  //   alert("Order Placed Successfully!");
+
+  //   const emailOrderDetails = {
+  //     order_id: Math.floor(Math.random() * 100000),
+  //     name: name,
+  //     email: email, // Recipient email
+
+  //     orders: cart.map((item) => ({
+  //       name: item.name,
+  //       units: item.quantity,
+  //       price: item.price,
+  //       image_url: item.imageurl,
+  //     })),
+
+  //     cost: {
+  //       shipping: 0,
+  //       tax: 0,
+  //       coupon: discount,
+  //       total: finalAmount,
+  //     },
+  //   };
+
+  //   await sendOrderEmail(emailOrderDetails);
+
+  //   const orderData = {
+  //     orderNumber: Math.floor(Math.random() * 100000),
+
+  //     customerName: name,
+
+  //     mobile: mobile,
+
+  //     email: email,
+
+  //     address: address,
+
+  //     paymentMode: paymentMode,
+
+  //     grandTotal: grandTotal,
+
+  //     discount: discount,
+
+  //     finalAmount: finalAmount,
+
+  //     orderDate: new Date().toLocaleString(),
+
+  //     status: "PLACED",
+
+  //     items: [...cart],
+  //   };
+
+  //   addOrder(orderData);
+
+  //   clearCart();
+
+  //   navigate("/orders");
+  // };
 
     //prepare the email information 
     // Map the template params & our Data.
@@ -113,8 +197,38 @@ function Checkout() {
     
     await sendOrderEmail(order);
 
+   const orderData = {
+      orderNumber: Math.floor(Math.random() * 100000),
+
+      customerName: name,
+
+      mobile: mobile,
+
+      email: email,
+
+      address: address,
+
+      paymentMode: paymentMode,
+
+      grandTotal: grandTotal,
+
+      discount: discount,
+
+      finalAmount: finalAmount,
+
+      orderDate: new Date().toLocaleString(),
+
+      status: "PLACED",
+
+      items: [...cart],
+    };
+
+    addOrder(orderData);
+
     clearCart();
-    navigate("/cart");
+
+    navigate("/orders");
+  
   };
 
 
