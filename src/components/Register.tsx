@@ -1,43 +1,90 @@
-import { useForm } from "react-hook-form";
-import { serviceRegister } from "../services/AuthService";
-import type { RegisterRequest } from "../interfaces/RegisterRequest";
-import "./Register.css";
+
+import React from 'react'
+import { useForm } from 'react-hook-form'
+// import type { RegisterRequest } from '../interfaces/LoginRequest'
+import type { RegisterRequest } from '../interfaces/RegisterRequest'
+// import { registerUser } from '../apis/AuthApis';
+// import { registerSevice } from '../services/AuthService';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
 
-  const { register, handleSubmit, reset } = useForm<RegisterRequest>();
+  let {register,handleSubmit,reset}  = useForm<RegisterRequest>();
 
-  // 👇 Write the onSubmit function HERE
-  const onSubmit = async (data: RegisterRequest) => {
-    try {
-      const response = await serviceRegister(data);
-      console.log(response);
-      alert("Registration Successful");
-      reset();
-    } catch (error) {
-      console.error(error);
-      alert("Registration Failed");
-    }
-  };
+let navigate = useNavigate();
 
-  return (
-    <div className="container">
-  <form className="register-form" onSubmit={handleSubmit(onSubmit)}>
-    <h2>Register</h2>
+    let onSubmitLogics = (data: RegisterRequest) => {
 
-    <input type="text" {...register("name")} placeholder="Username" />
+        console.log(data);
 
-    <input type="password" {...register("password")} placeholder="Password" />
+        // registerSevice(data);
 
-    <input type="email" {...register("email")} placeholder="Email" />
+      // Read existing users
+      const users: RegisterRequest[] = JSON.parse(
+        localStorage.getItem("users") || "[]"
+      );
 
-    <input type="number" {...register("phone")} placeholder="Phone Number" />
-
-    <button type="submit">Register</button>
-  </form>
-</div>
-  
+    // Check duplicate email
+  const userExists = users.some(
+    (user) => user.email === data.email
   );
+
+    if (userExists) {
+    alert("Email already registered");
+    return;
+  }
+    // Add id
+  const newUser = { id: users.length + 1, ...data};
+
+   // Add new user to array
+  users.push(newUser);
+
+  localStorage.setItem("users", JSON.stringify(users));
+        alert("Registration successfulll");
+        navigate("/login");
+        reset();
+    }
+  return (
+    <>
+    <form onSubmit={handleSubmit(onSubmitLogics)}>
+
+      <input
+        type="text"
+        {...register("name")}
+        placeholder="Enter Username"
+      />
+
+      <br /><br />
+
+      <input
+        type="password"
+        {...register("password")}
+        placeholder="Enter Password"
+      />
+
+      <br /><br />
+
+      <input
+        type="email"
+        {...register("email")}
+        placeholder="Enter Email"
+      />
+
+      <br /><br />
+
+      <input
+        type="number"
+        {...register("phone")}
+        placeholder="Enter Phone Number"
+      />
+
+      <br /><br />
+
+      <button type="submit">Register</button>
+
+    </form>
+    </>
+  )
 }
 
-export default Register;
+export default Register

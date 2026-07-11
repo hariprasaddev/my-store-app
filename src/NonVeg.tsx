@@ -4,6 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { CartContext } from "./contexApi/CartContext";
 import type { Product } from "./interfaces/Product";
+import { useNavigate } from "react-router-dom";
 
 const nonVegItems: Product[] = [
   {
@@ -94,8 +95,23 @@ const nonVegItems: Product[] = [
 
 function NonVeg() {
   const { addToCart } = useContext(CartContext);
+  const navigate = useNavigate();
 
   const handleAddToCart = (item: Product) => {
+       const loggedInUser = JSON.parse(
+      localStorage.getItem("loggedInUser") || "null"
+    );
+
+    if (!loggedInUser) {
+
+      toast.warning("Please login first!");
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1500);
+
+      return;
+    }
     addToCart(item);
     toast.success(`${item.name} Added Successfully`);
   };

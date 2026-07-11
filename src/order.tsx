@@ -1,172 +1,163 @@
 import { useContext } from "react";
 import { OrderContext } from "./contexApi/OrderContext";
 import {
-  FaBoxOpen,
   FaUser,
-  FaPhone,
   FaEnvelope,
+  FaPhone,
   FaMapMarkerAlt,
-  FaCreditCard,
   FaCalendarAlt,
   FaCheckCircle,
-  FaRupeeSign,
+  FaMoneyBillWave,
+  FaShoppingBag,
 } from "react-icons/fa";
 
 function Orders() {
   const { orders } = useContext(OrderContext);
 
+  if (orders.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-5">
+        <div className="bg-white rounded-2xl shadow-xl p-10 text-center max-w-md w-full">
+          <div className="text-7xl mb-4">📦</div>
+
+          <h2 className="text-3xl font-bold text-gray-700">
+            No Orders Yet
+          </h2>
+
+          <p className="text-gray-500 mt-3">
+            Your placed orders will appear here.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-100 py-10 px-5">
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-6xl mx-auto">
 
-        <h1 className="text-5xl font-bold text-center text-green-700 mb-12">
+        <h1 className="text-4xl font-bold text-center text-green-700 mb-8">
           📦 My Orders
         </h1>
 
-        {orders.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-xl p-16 text-center">
+        <div className="space-y-6">
 
-            <FaBoxOpen className="text-7xl text-gray-400 mx-auto mb-5" />
+          {orders.map((order) => (
 
-            <h2 className="text-3xl font-bold text-gray-700">
-              No Orders Yet
-            </h2>
+            <div
+              key={order.orderNumber}
+              className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-200"
+            >
 
-            <p className="text-gray-500 mt-3">
-              Your ordered products will appear here.
-            </p>
+              {/* Header */}
 
-          </div>
-        ) : (
-          <div className="space-y-10">
+              <div className="bg-green-600 text-white px-6 py-4 flex justify-between items-center">
 
-            {orders.map((order) => (
+                <div>
 
-              <div
-                key={order.orderNumber}
-                className="bg-white rounded-3xl shadow-2xl overflow-hidden"
-              >
+                  <h2 className="text-2xl font-bold">
+                    Order #{order.orderNumber}
+                  </h2>
 
-                {/* Header */}
-
-                <div className="bg-green-600 text-white px-8 py-6 flex flex-col md:flex-row justify-between items-center">
-
-                  <div>
-
-                    <h2 className="text-3xl font-bold">
-                      Order #{order.orderNumber}
-                    </h2>
-
-                    <p className="mt-2 flex items-center gap-2">
-
-                      <FaCalendarAlt />
-
-                      {order.orderDate}
-
-                    </p>
-
-                  </div>
-
-                  <span className="mt-5 md:mt-0 bg-white text-green-700 font-bold px-6 py-3 rounded-full flex items-center gap-2">
-
-                    <FaCheckCircle />
-
-                    {order.status}
-
-                  </span>
+                  <p className="flex items-center gap-2 mt-1 text-green-100">
+                    <FaCalendarAlt />
+                    {order.orderDate}
+                  </p>
 
                 </div>
 
-                {/* Customer & Payment */}
+                <span className="bg-white text-green-700 px-5 py-2 rounded-full font-bold flex items-center gap-2">
+                  <FaCheckCircle />
+                  {order.status}
+                </span>
 
-                <div className="grid md:grid-cols-2 gap-8 p-8">
+              </div>
 
-                  <div className="bg-gray-50 rounded-2xl p-6">
+              {/* Body */}
 
-                    <h3 className="text-2xl font-bold mb-5 text-green-700">
+              <div className="p-6">
+
+                <div className="grid md:grid-cols-2 gap-6">
+
+                  {/* Customer */}
+
+                  <div className="bg-gray-50 rounded-xl p-5">
+
+                    <h3 className="text-xl font-bold text-green-700 mb-4">
                       Customer Details
                     </h3>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3 text-gray-700">
 
-                      <p className="flex gap-3">
-                        <FaUser className="text-blue-600 mt-1" />
-                        <span>
-                          <b>Name:</b> {order.customerName}
-                        </span>
+                      <p className="flex items-center gap-3">
+                        <FaUser className="text-blue-600" />
+                        <span className="font-semibold">Name :</span>
+                        {order.customerName}
                       </p>
 
-                      <p className="flex gap-3">
-                        <FaEnvelope className="text-red-500 mt-1" />
-                        <span>
-                          <b>Email:</b> {order.email}
-                        </span>
+                      <p className="flex items-center gap-3">
+                        <FaEnvelope className="text-red-500" />
+                        <span className="font-semibold">Email :</span>
+                        {order.email}
                       </p>
 
-                      <p className="flex gap-3">
-                        <FaPhone className="text-green-600 mt-1" />
-                        <span>
-                          <b>Mobile:</b> {order.mobile}
-                        </span>
+                      <p className="flex items-center gap-3">
+                        <FaPhone className="text-green-600" />
+                        <span className="font-semibold">Mobile :</span>
+                        {order.mobile}
                       </p>
 
-                      <p className="flex gap-3">
+                      <p className="flex items-start gap-3">
                         <FaMapMarkerAlt className="text-purple-600 mt-1" />
-                        <span>
-                          <b>Address:</b> {order.address}
-                        </span>
+                        <span className="font-semibold">Address :</span>
+                        {order.address}
                       </p>
 
                     </div>
 
                   </div>
 
-                  <div className="bg-gray-50 rounded-2xl p-6">
+                  {/* Payment */}
 
-                    <h3 className="text-2xl font-bold mb-5 text-green-700">
+                  <div className="bg-gray-50 rounded-xl p-5">
+
+                    <h3 className="text-xl font-bold text-green-700 mb-4">
                       Payment Summary
                     </h3>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3 text-gray-700">
 
-                      <p className="flex justify-between">
-                        <span className="font-semibold flex items-center gap-2">
-                          <FaCreditCard />
+                      <div className="flex justify-between">
+                        <span className="flex items-center gap-2">
+                          <FaMoneyBillWave />
                           Payment
                         </span>
-
                         <span>{order.paymentMode}</span>
-                      </p>
+                      </div>
 
-                      <p className="flex justify-between">
+                      <div className="flex justify-between">
                         <span>Subtotal</span>
-
                         <span>₹{order.grandTotal}</span>
-                      </p>
+                      </div>
 
-                      <p className="flex justify-between text-red-600">
+                      <div className="flex justify-between text-red-500">
                         <span>Discount</span>
-
                         <span>- ₹{order.discount}</span>
-                      </p>
+                      </div>
 
-                      <p className="flex justify-between">
+                      <div className="flex justify-between">
                         <span>Delivery</span>
-
                         <span className="text-green-600 font-bold">
                           FREE
                         </span>
-                      </p>
+                      </div>
 
                       <hr />
 
-                      <div className="flex justify-between text-3xl font-bold text-green-700">
-
+                      <div className="flex justify-between text-2xl font-bold text-green-700">
                         <span>Total</span>
-
                         <span>₹{order.finalAmount}</span>
-
                       </div>
 
                     </div>
@@ -175,75 +166,69 @@ function Orders() {
 
                 </div>
 
-                {/* Ordered Items */}
+                {/* Products */}
 
-                <div className="px-8 pb-8">
+                <h3 className="text-2xl font-bold text-green-700 mt-8 mb-5 text-center">
+                  <FaShoppingBag className="inline mr-2" />
+                  Ordered Items
+                </h3>
 
-                  <h3 className="text-2xl font-bold mb-6 text-green-700">
-                    Ordered Items
-                  </h3>
+                <div className="space-y-4">
 
-                  <div className="space-y-5">
+                  {order.items.map((item) => (
 
-                    {order.items.map((item) => (
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between border rounded-xl p-4 hover:shadow-md transition"
+                    >
 
-                      <div
-                        key={item.id}
-                        className="flex flex-col md:flex-row justify-between items-center bg-gray-50 rounded-2xl p-5 hover:shadow-lg transition"
-                      >
+                      <div className="flex items-center gap-4">
 
-                        <div className="flex items-center gap-5">
+                        <img
+                          src={item.imageurl}
+                          alt={item.name}
+                          className="w-20 h-20 rounded-xl object-cover border"
+                        />
 
-                          <img
-                            src={item.imageurl}
-                            alt={item.name}
-                            className="w-24 h-24 rounded-xl object-cover border"
-                          />
+                        <div>
 
-                          <div>
+                          <h4 className="text-lg font-bold">
+                            {item.name}
+                          </h4>
 
-                            <h3 className="text-xl font-bold">
-                              {item.name}
-                            </h3>
+                          <p className="text-gray-500">
+                            Quantity : {item.quantity}
+                          </p>
 
-                            <p className="text-gray-500 mt-2">
-                              Quantity : {item.quantity}
-                            </p>
-
-                            <p className="text-gray-500">
-                              Price : ₹{item.price}
-                            </p>
-
-                          </div>
-
-                        </div>
-
-                        <div className="mt-5 md:mt-0 text-right">
-
-                          <p className="text-2xl font-bold text-green-700 flex items-center justify-end gap-1">
-
-                            <FaRupeeSign />
-
-                            {item.price * item.quantity}
-
+                          <p className="text-gray-500">
+                            Price : ₹{item.price}
                           </p>
 
                         </div>
 
                       </div>
 
-                    ))}
+                      <div className="text-right">
 
-                  </div>
+                        <h3 className="text-2xl font-bold text-green-700">
+                          ₹{item.price * item.quantity}
+                        </h3>
+
+                      </div>
+
+                    </div>
+
+                  ))}
 
                 </div>
 
               </div>
 
-            ))}
+            </div>
 
-          </div>
-        )}
+          ))}
+
+        </div>
 
       </div>
 
