@@ -1,90 +1,266 @@
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import type { RegisterRequest } from "../interfaces/RegisterRequest";
 
-import React from 'react'
-import { useForm } from 'react-hook-form'
-// import type { RegisterRequest } from '../interfaces/LoginRequest'
-import type { RegisterRequest } from '../interfaces/RegisterRequest'
-// import { registerUser } from '../apis/AuthApis';
-// import { registerSevice } from '../services/AuthService';
-import { useNavigate } from 'react-router-dom';
+import {
+  FaLeaf,
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaUserPlus,
+} from "react-icons/fa";
+
+import { useState } from "react";
 
 function Register() {
+  const navigate = useNavigate();
 
-  let {register,handleSubmit,reset}  = useForm<RegisterRequest>();
+  const [showPassword, setShowPassword] = useState(false);
 
-let navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<RegisterRequest>();
 
-    let onSubmitLogics = (data: RegisterRequest) => {
+  const onSubmitLogics = (data: RegisterRequest) => {
+    const users: RegisterRequest[] = JSON.parse(
+      localStorage.getItem("users") || "[]"
+    );
 
-        console.log(data);
-
-        // registerSevice(data);
-
-      // Read existing users
-      const users: RegisterRequest[] = JSON.parse(
-        localStorage.getItem("users") || "[]"
-      );
-
-    // Check duplicate email
-  const userExists = users.some(
-    (user) => user.email === data.email
-  );
+    const userExists = users.some(
+      (user) => user.email === data.email
+    );
 
     if (userExists) {
-    alert("Email already registered");
-    return;
-  }
-    // Add id
-  const newUser = { id: users.length + 1, ...data};
-
-   // Add new user to array
-  users.push(newUser);
-
-  localStorage.setItem("users", JSON.stringify(users));
-        alert("Registration successfulll");
-        navigate("/login");
-        reset();
+      alert("❌ Email already registered");
+      return;
     }
+
+    const newUser = {
+      id: users.length + 1,
+      ...data,
+    };
+
+    users.push(newUser);
+
+    localStorage.setItem(
+      "users",
+      JSON.stringify(users)
+    );
+
+    alert("✅ Registration Successful");
+
+    reset();
+
+    navigate("/login");
+  };
+
   return (
-    <>
-    <form onSubmit={handleSubmit(onSubmitLogics)}>
+    <div className="min-h-screen bg-gradient-to-br from-green-100 via-white to-green-200 flex items-center justify-center px-4 py-10">
 
-      <input
-        type="text"
-        {...register("name")}
-        placeholder="Enter Username"
-      />
+      <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-8">
 
-      <br /><br />
+        <div className="text-center mb-8">
 
-      <input
-        type="password"
-        {...register("password")}
-        placeholder="Enter Password"
-      />
+          <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto">
 
-      <br /><br />
+            <FaLeaf className="text-4xl text-green-700" />
 
-      <input
-        type="email"
-        {...register("email")}
-        placeholder="Enter Email"
-      />
+          </div>
 
-      <br /><br />
+          <h1 className="text-4xl font-bold text-green-700 mt-5">
+            Fresh Mart
+          </h1>
 
-      <input
-        type="number"
-        {...register("phone")}
-        placeholder="Enter Phone Number"
-      />
+          <p className="text-gray-500 mt-2">
+            Create your account
+          </p>
 
-      <br /><br />
+        </div>
 
-      <button type="submit">Register</button>
+        <form
+          onSubmit={handleSubmit(onSubmitLogics)}
+          className="space-y-5"
+        >
 
-    </form>
-    </>
-  )
+          {/* Name */}
+
+          <div>
+
+            <label className="font-semibold">
+              Full Name
+            </label>
+
+            <div className="flex items-center border rounded-xl mt-2 px-4">
+
+              <FaUser className="text-gray-400" />
+
+              <input
+                type="text"
+                placeholder="Enter Full Name"
+                className="w-full p-4 outline-none"
+                {...register("name", {
+                  required: "Name is required",
+                })}
+              />
+
+            </div>
+
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.name.message}
+              </p>
+            )}
+
+          </div>
+
+          {/* Email */}
+
+          <div>
+
+            <label className="font-semibold">
+              Email Address
+            </label>
+
+            <div className="flex items-center border rounded-xl mt-2 px-4">
+
+              <FaEnvelope className="text-gray-400" />
+
+              <input
+                type="email"
+                placeholder="Enter Email"
+                className="w-full p-4 outline-none"
+                {...register("email", {
+                  required: "Email is required",
+                })}
+              />
+
+            </div>
+
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
+
+          </div>
+
+          {/* Phone */}
+
+          <div>
+
+            <label className="font-semibold">
+              Phone Number
+            </label>
+
+            <div className="flex items-center border rounded-xl mt-2 px-4">
+
+              <FaPhone className="text-gray-400" />
+
+              <input
+                type="tel"
+                placeholder="Enter Phone Number"
+                className="w-full p-4 outline-none"
+                {...register("phone", {
+                  required: "Phone number is required",
+                })}
+              />
+
+            </div>
+
+            {errors.phone && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.phone.message}
+              </p>
+            )}
+
+          </div>
+
+          {/* Password */}
+
+          <div>
+
+            <label className="font-semibold">
+              Password
+            </label>
+
+            <div className="flex items-center border rounded-xl mt-2 px-4">
+
+              <FaLock className="text-gray-400" />
+
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter Password"
+                className="w-full p-4 outline-none"
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message:
+                      "Minimum 6 characters",
+                  },
+                })}
+              />
+
+              <button
+                type="button"
+                onClick={() =>
+                  setShowPassword(!showPassword)
+                }
+              >
+                {showPassword ? (
+                  <FaEyeSlash className="text-gray-500" />
+                ) : (
+                  <FaEye className="text-gray-500" />
+                )}
+              </button>
+
+            </div>
+
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
+
+          </div>
+
+          {/* Register Button */}
+
+          <button
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold text-lg flex justify-center items-center gap-3 transition duration-300"
+          >
+            <FaUserPlus />
+            Create Account
+          </button>
+
+        </form>
+
+        <div className="text-center mt-8">
+
+          <p className="text-gray-600">
+            Already have an account?
+          </p>
+
+          <Link
+            to="/login"
+            className="text-green-700 font-bold hover:underline"
+          >
+            Login Here
+          </Link>
+
+        </div>
+
+      </div>
+
+    </div>
+  );
 }
 
-export default Register
+export default Register;
