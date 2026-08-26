@@ -1,42 +1,47 @@
 import { useContext, useState } from "react";
-import { BrowserRouter, Link, NavLink, Route, Routes } from "react-router-dom";
-// import { FaHome, FaShoppingCart, FaSignInAlt, FaUserPlus } from "react-icons/fa";
-import { GiCarrot, GiChickenOven } from "react-icons/gi";
-import Register from "./components/Register";
-import  Checkout from "./Checkout";
+import {
+  BrowserRouter,
+  Link,
+  NavLink,
+  Route,
+  Routes,
+} from "react-router-dom";
+
 import {
   FaHome,
   FaShoppingCart,
   FaSignInAlt,
   FaUserPlus,
   FaClipboardList,
-  FaCoffee
+  FaCoffee,
 } from "react-icons/fa";
 
+import { GiCarrot, GiChickenOven } from "react-icons/gi";
 
+import Register from "./components/Register";
+import Checkout from "./Checkout";
 import Home from "./Home";
 import Veg from "./Veg";
 import NonVeg from "./NonVeg";
-// import Cart from "./Cart";
 import Cart from "./Cart";
-// import { CartContext } from "./contextApi/CartContext";
-import { CartContext } from "./contexApi/CartContext";
-
-
-import "./App.css";
 import Orders from "./order";
 import Login from "./Login";
 import Cafe from "./components/Cafe";
-import { Fa0 } from "react-icons/fa6";
 
+import { CartContext } from "./contexApi/CartContext";
+
+import "./App.css";
 
 function App() {
+  // Get cart data from CartContext
   const { cart } = useContext(CartContext);
 
-  const [loggedInUser, setLoggedInUser] = useState(
-    JSON.parse(localStorage.getItem("loggedInUser") || "null")
-  );
+  // Get logged-in user from localStorage
+  const [loggedInUser] = useState(() => {
+    return JSON.parse(localStorage.getItem("loggedInUser") || "null");
+  });
 
+  // Logout function
   const logout = () => {
     localStorage.removeItem("loggedInUser");
     window.location.reload();
@@ -45,42 +50,59 @@ function App() {
   return (
     <BrowserRouter>
       <div className="navbar">
+
+        {/* Home */}
         <NavLink to="/" end>
           <FaHome /> Home
         </NavLink>
 
+        {/* Veg Items */}
         <NavLink to="/veg">
           <GiCarrot /> Veg Items
         </NavLink>
 
+        {/* Non-Veg Items */}
         <NavLink to="/nonveg">
           <GiChickenOven /> NonVeg Items
         </NavLink>
-        <NavLink to="/cafe">
-  <FaCoffee /> Cafe
-</NavLink>
 
-<NavLink to="/orders">
-  <FaClipboardList /> Orders
-</NavLink>
+        {/* Cafe */}
+        <NavLink to="/cafe">
+          <FaCoffee /> Cafe
+        </NavLink>
+
+        {/* Orders */}
+        <NavLink to="/orders">
+          <FaClipboardList /> Orders
+        </NavLink>
+
+        {/* Cart */}
         <NavLink to="/cart">
           <FaShoppingCart /> Cart ({cart.length})
         </NavLink>
 
+        {/* Login / Register / Logout */}
         {loggedInUser ? (
           <>
             <span style={{ marginLeft: "20px" }}>
               Welcome <b>{loggedInUser.name}</b>
             </span>
-            <button onClick={logout} style={{ marginLeft: "15px" }}>
+
+            <button
+              onClick={logout}
+              style={{ marginLeft: "15px" }}
+            >
               Logout
             </button>
           </>
         ) : (
           <>
+            {/* Register */}
             <Link to="/register" className="menu-link">
               <FaUserPlus /> Register
             </Link>
+
+            {/* Login */}
             <Link to="/login" className="menu-link">
               <FaSignInAlt /> Login
             </Link>
@@ -88,15 +110,24 @@ function App() {
         )}
       </div>
 
+      {/* Application Routes */}
       <Routes>
         <Route path="/" element={<Home />} />
+
         <Route path="/register" element={<Register />} />
-        <Route path="/veg" element={<Veg />} />
-        <Route path="/nonveg" element={<NonVeg />} />
-        <Route path="/cafe" element={<Cafe />} />
-        <Route path="/cart" element={<Cart />} />
+
         <Route path="/login" element={<Login />} />
+
+        <Route path="/veg" element={<Veg />} />
+
+        <Route path="/nonveg" element={<NonVeg />} />
+
+        <Route path="/cafe" element={<Cafe />} />
+
+        <Route path="/cart" element={<Cart />} />
+
         <Route path="/orders" element={<Orders />} />
+
         <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </BrowserRouter>

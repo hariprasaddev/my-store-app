@@ -1,11 +1,10 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { CartContext } from "./contexApi/CartContext";
 import type { Product } from "./interfaces/Product";
 import { useNavigate } from "react-router-dom";
-import { addToCart } from "./contexApi/CartActions";
 
 const vegItems: Product[] = [
   {
@@ -123,27 +122,47 @@ const vegItems: Product[] = [
 ];
 
 function Veg() {
-   const { addToCart } = useContext(CartContext);
-     const loggedInUser = JSON.parse(
-      localStorage.getItem("loggedInUser") || "null"
-    );
-    const navigate = useNavigate();
+  const { addToCart } = useContext(CartContext);
+  const navigate = useNavigate();
 
+  const loggedInUser = JSON.parse(
+    localStorage.getItem("loggedInUser") || "null"
+  );
+
+  useEffect(() => {
     if (!loggedInUser) {
-
       toast.warning("Please login first!");
 
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         navigate("/login");
       }, 1500);
 
-      return;
+      return () => clearTimeout(timer);
     }
+  }, [loggedInUser, navigate]);
 
   const handleAddToCart = (veg: Product) => {
     addToCart(veg);
     toast.success(`${veg.name} Added Successfully`);
   };
+
+  if (!loggedInUser) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <ToastContainer position="top-right" autoClose={3000} />
+
+        <div className="bg-white p-8 rounded-2xl shadow-lg text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+            Please Login First
+          </h2>
+
+          <p className="text-gray-600">
+            Redirecting you to the login page...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 py-10">
@@ -154,16 +173,12 @@ function Veg() {
       </h1>
 
       <div className="max-w-7xl mx-auto px-6">
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-
           {vegItems.map((veg) => (
-
             <div
               key={veg.id}
               className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden hover:-translate-y-1"
             >
-
               <img
                 src={veg.imageurl}
                 alt={veg.name}
@@ -171,14 +186,13 @@ function Veg() {
               />
 
               <div className="p-5">
-
                 <h2 className="text-2xl font-bold text-gray-800">
                   {veg.name}
                 </h2>
 
                 <p className="text-xl font-semibold text-gray-600 mt-2">
-  ₹ {veg.price}
-</p>
+                  ₹ {veg.price}
+                </p>
 
                 <p className="text-gray-500 mt-2 min-h-[48px]">
                   {veg.description}
@@ -190,17 +204,11 @@ function Veg() {
                 >
                   Add to Cart
                 </button>
-
               </div>
-
             </div>
-
           ))}
-
         </div>
-
       </div>
-
     </div>
   );
 }
